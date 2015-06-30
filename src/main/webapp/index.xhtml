@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<h:head>	
+	</h:head>
+	
+	<h:body>
+		<!-- <p:messages id="msgs"></p:messages> -->
+		<p:growl id="msgs" ></p:growl>
+		<p:dataTable value="#{checkListController.checks}" var="check" id="checkTable">
+			<p:column headerText="Name">
+				#{check.name}
+			</p:column>
+			<p:column headerText="URL">
+				<a href="#{check.url}" target="_blank">
+					#{check.url}
+				</a>
+			</p:column>
+			<p:column>
+				<h:form>
+					<p:commandLink value="Edit" action="#{checkListController.setCheck(check)}" update=":checkForm" oncomplete="PF('checkDialog').show()" resetValues="true">
+					
+					</p:commandLink>
+					| <p:commandLink value="Remove" action="#{checkListController.remove(check)}" update=":checkTable, :msgs">
+						<p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
+					
+					</p:commandLink>
+				</h:form>
+			</p:column>
+		</p:dataTable>
+		
+<h:form>
+	<p:commandButton value="Check" action="#{checkListController.clear()}" update=":checkForm" oncomplete="PF('checkDialog').show()" resetValues="true"></p:commandButton>
+</h:form>		
+		
+<p:dialog widgetVar="checkDialog" closeOnEscape="true" modal="true" header="Check">	
+	<h:form id="checkForm">
+	<p:messages></p:messages>
+	<p:focus></p:focus>
+		<p:panelGrid columns="2">
+			Name:
+			<p:inputText value="#{checkListController.check.name}" ></p:inputText>
+			URL:
+			<p:inputText value="#{checkListController.check.url}"></p:inputText>					<!-- Colon is used because that component is out of the current component -->
+			<p:commandButton value="Save" action="#{checkListController.save()}" update="checkForm, :checkTable" 
+				oncomplete="handleDialogSubmit(args,'checkDialog')"
+			></p:commandButton>
+		</p:panelGrid>
+	</h:form>
+</p:dialog>
+	
+	<h:form>
+	<p:confirmDialog global="true" closeOnEscape="true">
+        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    </p:confirmDialog>
+	</h:form>
+	<script>
+	function handleDialogSubmit(args,dialogName){
+	if(!args.validationFailed){
+			PF(dialogName).hide();
+		}
+		}
+	</script>
+	
+	</h:body>
+</html>
